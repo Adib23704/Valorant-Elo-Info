@@ -1,4 +1,3 @@
-
 interface RiotSession {
 	puuid: string;
 	region: string;
