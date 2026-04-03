@@ -39,7 +39,11 @@ function buildAuthHeader(password: string): string {
 	return `Basic ${encoded}`;
 }
 
-async function riotGet<T>(port: number, password: string, endpoint: string): Promise<T> {
+async function riotGet<T>(
+	port: number,
+	password: string,
+	endpoint: string,
+): Promise<T> {
 	const url = `https://127.0.0.1:${port}${endpoint}`;
 	const response = await fetch(url, {
 		headers: {
@@ -54,13 +58,27 @@ async function riotGet<T>(port: number, password: string, endpoint: string): Pro
 	return response.json() as Promise<T>;
 }
 
-export async function fetchPuuid(port: number, password: string): Promise<string> {
-	const session = await riotGet<RiotSession>(port, password, "/chat/v1/session");
+export async function fetchPuuid(
+	port: number,
+	password: string,
+): Promise<string> {
+	const session = await riotGet<RiotSession>(
+		port,
+		password,
+		"/chat/v1/session",
+	);
 	return session.puuid;
 }
 
-export async function fetchCurrentSeasonId(port: number, password: string): Promise<string> {
-	const content = await riotGet<ContentResponse>(port, password, "/content-service/v3/content");
+export async function fetchCurrentSeasonId(
+	port: number,
+	password: string,
+): Promise<string> {
+	const content = await riotGet<ContentResponse>(
+		port,
+		password,
+		"/content-service/v3/content",
+	);
 
 	const seasons = content.Seasons || [];
 	const activeAct = seasons.find((s) => s.IsActive && s.Type === "act");
@@ -72,11 +90,18 @@ export async function fetchCurrentSeasonId(port: number, password: string): Prom
 	return activeAct.ID;
 }
 
-export async function fetchMmr(port: number, password: string, puuid: string): Promise<MmrResponse> {
+export async function fetchMmr(
+	port: number,
+	password: string,
+	puuid: string,
+): Promise<MmrResponse> {
 	return riotGet<MmrResponse>(port, password, `/mmr/v1/players/${puuid}`);
 }
 
-export function extractRankData(mmrResponse: MmrResponse, seasonId: string): RankData {
+export function extractRankData(
+	mmrResponse: MmrResponse,
+	seasonId: string,
+): RankData {
 	const competitive = mmrResponse?.QueueSkills?.competitive;
 	if (!competitive) {
 		return { tier: 0, rr: 0 };
