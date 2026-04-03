@@ -10,7 +10,6 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/Adib23704/Valorant-Elo-Info/releases/latest"><img src="https://img.shields.io/github/v/release/Adib23704/Valorant-Elo-Info?style=flat-square&color=blue" alt="Latest Release" /></a>
   <a href="https://github.com/Adib23704/Valorant-Elo-Info/actions/workflows/ci.yml"><img src="https://img.shields.io/github/actions/workflow/status/Adib23704/Valorant-Elo-Info/ci.yml?style=flat-square&label=CI" alt="CI Status" /></a>
   <a href="https://github.com/Adib23704/Valorant-Elo-Info/actions/workflows/release.yml"><img src="https://img.shields.io/github/actions/workflow/status/Adib23704/Valorant-Elo-Info/release.yml?style=flat-square&label=Build" alt="Build Status" /></a>
   <a href="LICENSE"><img src="https://img.shields.io/github/license/Adib23704/Valorant-Elo-Info?style=flat-square" alt="License" /></a>
@@ -20,28 +19,7 @@
 ---
 
 ## Preview
-
-```
-  ╔══════════════════════════════╗
-  ║      VALORANT ELO INFO       ║
-  ╠══════════════════════════════╣
-  ║                              ║
-  ║   Player: Azure#emm          ║
-  ║                              ║
-  ║   ── Current ──              ║
-  ║   Rank:   PLATINUM 1         ║
-  ║   RR:     30 / 100           ║
-  ║   ELO:    1,230              ║
-  ║                              ║
-  ║   ── Peak ──                 ║
-  ║   Rank:   DIAMOND 2          ║
-  ║   RR:     67 / 100           ║
-  ║   ELO:    1,667              ║
-  ║                              ║
-  ╚══════════════════════════════╝
-```
-
-> Rank names are color-coded by tier in the actual terminal output.
+<img src=".github/images/image.png" width=300 alt="Valorant Elo Info Preview" />
 
 ## Features
 
