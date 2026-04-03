@@ -6,10 +6,10 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Adib23704/valorant-elo-info.git"
+    "url": "git+https://github.com/Adib23704/Valorant-Elo-Info.git"
   },
-  "homepage": "https://github.com/Adib23704/valorant-elo-info#readme",
-  "bugs": "https://github.com/Adib23704/valorant-elo-info/issues",
+  "homepage": "https://github.com/Adib23704/Valorant-Elo-Info#readme",
+  "bugs": "https://github.com/Adib23704/Valorant-Elo-Info/issues",
   "type": "module",
   "scripts": {
     "start": "tsx src/index.ts",
