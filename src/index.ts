@@ -11,10 +11,11 @@ import { fetchRankData, fetchRiotContext } from "./riot-api.js";
 function waitForKeypress(): Promise<void> {
 	return new Promise(() => {
 		console.log("  Press any key to exit...");
-		process.stdin.setRawMode(true);
+		if (typeof process.stdin.setRawMode === "function") {
+			process.stdin.setRawMode(true);
+		}
 		process.stdin.resume();
 		process.stdin.once("data", () => {
-			process.stdin.setRawMode(false);
 			process.exit(0);
 		});
 	});
