@@ -2,26 +2,41 @@
   "name": "valorant-rank-cli",
   "version": "1.0.0",
   "description": "CLI tool to display your current Valorant rank, RR, and ELO",
-  "main": "src/index.js",
+  "main": "build/index.js",
   "type": "module",
   "bin": {
-    "valorant-rank": "src/index.js"
+    "valorant-rank": "build/index.js"
   },
   "scripts": {
-    "start": "node src/index.js",
-    "build": "pkg . --targets node18-win-x64 --output dist/valorant-rank-cli.exe"
+    "start": "tsx src/index.ts",
+    "build": "tsc && pkg build/index.js --targets node18-win-x64 --output dist/valorant-rank-cli.exe",
+    "lint": "biome check src/",
+    "lint:fix": "biome check --fix src/",
+    "format": "biome format --write src/"
   },
   "pkg": {
     "assets": [],
-    "targets": ["node18-win-x64"],
+    "targets": [
+      "node18-win-x64"
+    ],
     "outputPath": "dist"
   },
-  "keywords": ["valorant", "rank", "elo", "cli", "riot"],
+  "keywords": [
+    "valorant",
+    "rank",
+    "elo",
+    "cli",
+    "riot"
+  ],
   "license": "MIT",
   "dependencies": {
-    "chalk": "^5.4.1"
+    "chalk": "^5.6.2"
   },
   "devDependencies": {
-    "pkg": "^5.8.1"
+    "@biomejs/biome": "^2.4.10",
+    "@types/node": "^25.5.2",
+    "pkg": "^5.8.1",
+    "tsx": "^4.21.0",
+    "typescript": "^6.0.2"
   }
 }
