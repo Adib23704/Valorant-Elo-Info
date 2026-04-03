@@ -8,11 +8,14 @@
     "valorant-rank": "build/index.js"
   },
   "scripts": {
-    "start": "tsx src/index.ts",
+    "start": "tsx --no-warnings src/index.ts",
     "build": "tsc && pkg build/index.js --targets node18-win-x64 --output dist/valorant-rank-cli.exe",
     "lint": "biome check src/",
-    "lint:fix": "biome check --fix src/",
-    "format": "biome format --write src/"
+    "lint:fix": "biome check src/ --write",
+    "format": "biome format src/ --write",
+    "format:check": "biome format src/",
+    "typecheck": "tsc --noEmit",
+    "validate": "biome check src/ && tsc --noEmit"
   },
   "pkg": {
     "assets": [],
