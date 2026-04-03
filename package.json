@@ -1,0 +1,27 @@
+{
+  "name": "valorant-rank-cli",
+  "version": "1.0.0",
+  "description": "CLI tool to display your current Valorant rank, RR, and ELO",
+  "main": "src/index.js",
+  "type": "module",
+  "bin": {
+    "valorant-rank": "src/index.js"
+  },
+  "scripts": {
+    "start": "node src/index.js",
+    "build": "pkg . --targets node18-win-x64 --output dist/valorant-rank-cli.exe"
+  },
+  "pkg": {
+    "assets": [],
+    "targets": ["node18-win-x64"],
+    "outputPath": "dist"
+  },
+  "keywords": ["valorant", "rank", "elo", "cli", "riot"],
+  "license": "MIT",
+  "dependencies": {
+    "chalk": "^5.4.1"
+  },
+  "devDependencies": {
+    "pkg": "^5.8.1"
+  }
+}
