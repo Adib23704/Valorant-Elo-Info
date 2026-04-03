@@ -19,19 +19,21 @@ function pad(str: string, len: number): string {
 }
 
 export function renderRankBox(rankInfo: RankInfo): void {
-	const { rankName, rr, elo, tier } = rankInfo;
+	const { playerName, rankName, rr, elo, tier } = rankInfo;
 	const colorFn = getRankColor(tier);
 
-	const title = "VALORANT RANK CLI";
-	const rankLine = `Rank:   ${rankName}`;
-	const rrLine = `RR:     ${rr} / 100`;
-	const eloLine = `ELO:    ${elo.toLocaleString()}`;
+	const title = "VALORANT RANK INFO";
+	const nameLine = `Account: ${playerName}`;
+	const rankLine = `Rank:    ${rankName}`;
+	const rrLine = `RR:      ${rr} / 100`;
+	const eloLine = `Elo:     ${elo.toLocaleString()}`;
 
 	const innerWidth = 28;
 	const top = `  ${chalk.bold(`╔${"═".repeat(innerWidth)}╗`)}`;
 	const titleBar = `  ${chalk.bold("║")}${pad("", Math.floor((innerWidth - title.length) / 2))}${chalk.bold.white(title)}${pad("", Math.ceil((innerWidth - title.length) / 2))}${chalk.bold("║")}`;
 	const sep = `  ${chalk.bold(`╠${"═".repeat(innerWidth)}╣`)}`;
 	const empty = `  ${chalk.bold("║")}${" ".repeat(innerWidth)}${chalk.bold("║")}`;
+	const nLine = `  ${chalk.bold("║")}   ${chalk.cyan(pad(nameLine, innerWidth - 3))}${chalk.bold("║")}`;
 	const rLine = `  ${chalk.bold("║")}   ${colorFn(pad(rankLine, innerWidth - 3))}${chalk.bold("║")}`;
 	const rrL = `  ${chalk.bold("║")}   ${chalk.white(pad(rrLine, innerWidth - 3))}${chalk.bold("║")}`;
 	const eloL = `  ${chalk.bold("║")}   ${chalk.white(pad(eloLine, innerWidth - 3))}${chalk.bold("║")}`;
@@ -42,6 +44,7 @@ export function renderRankBox(rankInfo: RankInfo): void {
 	console.log(titleBar);
 	console.log(sep);
 	console.log(empty);
+	console.log(nLine);
 	console.log(rLine);
 	console.log(rrL);
 	console.log(eloL);

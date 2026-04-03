@@ -22,20 +22,17 @@ function waitForKeypress(): Promise<void> {
 
 async function main(): Promise<void> {
 	try {
-		// Step 1: Read lockfile
 		const lockfile = readLockfile();
 
-		// Step 2: Get auth context and tier names in parallel
 		const [ctx, tierNames] = await Promise.all([
 			fetchRiotContext(lockfile.port, lockfile.password),
 			fetchTierNames(),
 		]);
 
-		// Step 3: Fetch rank data from remote Valorant API
 		const { tier, rr } = await fetchRankData(ctx);
 
-		// Step 4: Format and display
-		const rankInfo = formatRankInfo(tier, rr, tierNames);
+		const playerName = `${ctx.gameName}#${ctx.gameTag}`;
+		const rankInfo = formatRankInfo(tier, rr, tierNames, playerName);
 		renderRankBox(rankInfo);
 	} catch (error) {
 		renderError(error instanceof Error ? error.message : String(error));

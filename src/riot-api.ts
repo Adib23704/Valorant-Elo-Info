@@ -3,6 +3,8 @@
 interface RiotSession {
 	puuid: string;
 	region: string;
+	game_name: string;
+	game_tag: string;
 }
 
 interface EntitlementsResponse {
@@ -59,6 +61,8 @@ export interface RankData {
 export interface RiotContext {
 	puuid: string;
 	region: string;
+	gameName: string;
+	gameTag: string;
 	accessToken: string;
 	entitlementsToken: string;
 	clientVersion: string;
@@ -139,6 +143,8 @@ export async function fetchRiotContext(
 	return {
 		puuid: session.puuid,
 		region: session.region,
+		gameName: session.game_name,
+		gameTag: session.game_tag,
 		accessToken: entitlements.accessToken,
 		entitlementsToken: entitlements.token,
 		clientVersion,

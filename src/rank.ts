@@ -3,6 +3,7 @@ const VALORANT_API_URL = "https://valorant-api.com/v1/competitivetiers";
 export type TierMap = Record<number, string>;
 
 export interface RankInfo {
+	playerName: string;
 	rankName: string;
 	rr: number;
 	elo: number;
@@ -51,11 +52,13 @@ export function formatRankInfo(
 	tier: number,
 	rr: number,
 	tierNames: TierMap,
+	playerName: string,
 ): RankInfo {
 	const rankName = tierNames[tier] || `Unknown (Tier ${tier})`;
 	const elo = calculateElo(tier, rr);
 
 	return {
+		playerName,
 		rankName,
 		rr,
 		elo,
