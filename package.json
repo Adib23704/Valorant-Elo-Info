@@ -1,16 +1,20 @@
 {
-  "name": "valorant-rank-cli",
+  "name": "valorant-elo-info",
   "version": "1.0.0",
-  "description": "CLI tool to display your current Valorant rank, RR, and ELO",
-  "main": "build/index.js",
-  "type": "module",
-  "bin": {
-    "valorant-rank": "build/index.js"
+  "description": "Instantly check your Valorant rank, RR, and ELO from the command line",
+  "author": "Adib23704",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Adib23704/valorant-elo-info.git"
   },
+  "homepage": "https://github.com/Adib23704/valorant-elo-info#readme",
+  "bugs": "https://github.com/Adib23704/valorant-elo-info/issues",
+  "type": "module",
   "scripts": {
     "start": "tsx src/index.ts",
     "prebuild": "rimraf dist build",
-    "build": "tsc && esbuild build/index.js --bundle --platform=node --format=cjs --outfile=dist/bundle.cjs && pkg dist/bundle.cjs --targets node18-win-x64 --output dist/valorant-rank-cli.exe",
+    "build": "tsc && esbuild build/index.js --bundle --platform=node --format=cjs --outfile=dist/bundle.cjs && pkg dist/bundle.cjs --targets node18-win-x64 --output dist/valorant-elo-info.exe",
     "postbuild": "rimraf build dist/bundle.cjs",
     "lint": "biome check src/",
     "lint:fix": "biome check src/ --write",
@@ -19,21 +23,18 @@
     "typecheck": "tsc --noEmit",
     "validate": "biome check src/ && tsc --noEmit"
   },
-  "pkg": {
-    "assets": [],
-    "targets": [
-      "node18-win-x64"
-    ],
-    "outputPath": "dist"
-  },
   "keywords": [
     "valorant",
-    "rank",
-    "elo",
-    "cli",
-    "riot"
+    "valorant-rank",
+    "valorant-elo",
+    "ranked-rating",
+    "riot-games",
+    "riot-client",
+    "mmr",
+    "competitive",
+    "tracker",
+    "cli"
   ],
-  "license": "MIT",
   "dependencies": {
     "chalk": "^5.6.2",
     "rimraf": "^6.1.3"
@@ -45,5 +46,6 @@
     "pkg": "^5.8.1",
     "tsx": "^4.21.0",
     "typescript": "^6.0.2"
-  }
+  },
+  "packageManager": "pnpm@10.33.0"
 }

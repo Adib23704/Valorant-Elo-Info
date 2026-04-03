@@ -22,7 +22,7 @@ export function renderRankBox(rankInfo: RankInfo): void {
 	const { playerName, rankName, rr, elo, tier } = rankInfo;
 	const colorFn = getRankColor(tier);
 
-	const title = "VALORANT RANK INFO";
+	const title = "VALORANT ELO INFO";
 	const nameLine = `Account: ${playerName}`;
 	const rankLine = `Rank:    ${rankName}`;
 	const rrLine = `RR:      ${rr} / 100`;

@@ -1,4 +1,3 @@
-// --- Local API types ---
 
 interface RiotSession {
 	puuid: string;
@@ -32,8 +31,6 @@ interface PresenceData {
 	};
 }
 
-// --- Remote API types ---
-
 interface SeasonalInfo {
 	CompetitiveTier: number;
 	RankedRating: number;
@@ -51,8 +48,6 @@ interface MmrResponse {
 	QueueSkills?: QueueSkills;
 }
 
-// --- Exports ---
-
 export interface RankData {
 	tier: number;
 	rr: number;
@@ -69,8 +64,6 @@ export interface RiotContext {
 	presenceTier: number;
 }
 
-// --- Region to shard mapping ---
-
 const REGION_TO_SHARD: Record<string, string> = {
 	na: "na",
 	latam: "na",
@@ -83,8 +76,6 @@ const REGION_TO_SHARD: Record<string, string> = {
 
 const CLIENT_PLATFORM =
 	"ew0KCSJwbGF0Zm9ybVR5cGUiOiAiUEMiLA0KCSJwbGF0Zm9ybU9TIjogIldpbmRvd3MiLA0KCSJwbGF0Zm9ybU9TVmVyc2lvbiI6ICIxMC4wLjE5MDQxLjEuMjU2LjY0Yml0IiwNCgkicGxhdGZvcm1DaGlwc2V0IjogIlVua25vd24iDQp9";
-
-// --- Local API helpers ---
 
 function buildLocalAuthHeader(password: string): string {
 	const encoded = Buffer.from(`riot:${password}`).toString("base64");
@@ -110,20 +101,16 @@ async function localGet<T>(
 	return response.json() as Promise<T>;
 }
 
-// --- Public API ---
-
 export async function fetchRiotContext(
 	port: number,
 	password: string,
 ): Promise<RiotContext> {
-	// Fetch session, tokens, and presences in parallel
 	const [session, entitlements, presencesRes] = await Promise.all([
 		localGet<RiotSession>(port, password, "/chat/v1/session"),
 		localGet<EntitlementsResponse>(port, password, "/entitlements/v1/token"),
 		localGet<PresencesResponse>(port, password, "/chat/v4/presences"),
 	]);
 
-	// Decode our Valorant presence for client version + current tier
 	let clientVersion = "";
 	let presenceTier = 0;
 
@@ -166,7 +153,6 @@ export async function fetchRankData(ctx: RiotContext): Promise<RankData> {
 	});
 
 	if (!response.ok) {
-		// Fall back to presence tier if remote API fails
 		return { tier: ctx.presenceTier, rr: 0 };
 	}
 
@@ -174,11 +160,9 @@ export async function fetchRankData(ctx: RiotContext): Promise<RankData> {
 	const seasonal = mmr.QueueSkills?.competitive?.SeasonalInfoBySeasonID;
 
 	if (!seasonal) {
-		// No competitive data — use presence tier
 		return { tier: ctx.presenceTier, rr: 0 };
 	}
 
-	// Find the most recent season entry (highest tier or most recent)
 	let bestTier = 0;
 	let bestRr = 0;
 
@@ -189,7 +173,6 @@ export async function fetchRankData(ctx: RiotContext): Promise<RankData> {
 		}
 	}
 
-	// If MMR data found, use it; otherwise fall back to presence
 	if (bestTier > 0) {
 		return { tier: bestTier, rr: bestRr };
 	}
