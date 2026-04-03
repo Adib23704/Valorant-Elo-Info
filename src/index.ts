@@ -4,39 +4,35 @@ process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
 import { renderError, renderRankBox } from "./display.js";
 import { readLockfile } from "./lockfile.js";
 import { fetchTierNames, formatRankInfo } from "./rank.js";
-import {
-	extractRankData,
-	fetchCurrentSeasonId,
-	fetchMmr,
-	fetchPuuid,
-} from "./riot-api.js";
+import { fetchRankData, fetchRiotContext } from "./riot-api.js";
 
 function waitForKeypress(): Promise<void> {
-	return new Promise((resolve) => {
+	return new Promise(() => {
 		console.log("  Press any key to exit...");
 		process.stdin.setRawMode(true);
 		process.stdin.resume();
 		process.stdin.once("data", () => {
 			process.stdin.setRawMode(false);
-			resolve();
+			process.exit(0);
 		});
 	});
 }
 
 async function main(): Promise<void> {
 	try {
+		// Step 1: Read lockfile
 		const lockfile = readLockfile();
 
-		const [puuid, seasonId, tierNames] = await Promise.all([
-			fetchPuuid(lockfile.port, lockfile.password),
-			fetchCurrentSeasonId(lockfile.port, lockfile.password),
+		// Step 2: Get auth context and tier names in parallel
+		const [ctx, tierNames] = await Promise.all([
+			fetchRiotContext(lockfile.port, lockfile.password),
 			fetchTierNames(),
 		]);
 
-		const mmrResponse = await fetchMmr(lockfile.port, lockfile.password, puuid);
+		// Step 3: Fetch rank data from remote Valorant API
+		const { tier, rr } = await fetchRankData(ctx);
 
-		const { tier, rr } = extractRankData(mmrResponse, seasonId);
-
+		// Step 4: Format and display
 		const rankInfo = formatRankInfo(tier, rr, tierNames);
 		renderRankBox(rankInfo);
 	} catch (error) {
