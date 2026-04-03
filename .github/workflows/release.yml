@@ -31,7 +31,7 @@ jobs:
         uses: actions/upload-artifact@v7
         with:
           name: windows-builds
-          path: dist/valorant-elo-info.exe
+          path: dist/Valorant-Elo-Info.exe
 
   release:
     name: Create Release

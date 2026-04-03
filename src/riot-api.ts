@@ -1,3 +1,6 @@
+import { readFileSync } from "node:fs";
+import { join } from "node:path";
+
 interface RiotSession {
 	puuid: string;
 	region: string;
@@ -31,7 +34,7 @@ interface PresenceData {
 }
 
 interface SeasonalInfo {
-	CompetitiveTier: number;
+	Rank: number;
 	RankedRating: number;
 }
 
@@ -50,11 +53,14 @@ interface MmrResponse {
 export interface RankData {
 	tier: number;
 	rr: number;
+	peakTier: number;
+	peakRr: number;
 }
 
 export interface RiotContext {
 	puuid: string;
 	region: string;
+	shard: string;
 	gameName: string;
 	gameTag: string;
 	accessToken: string;
@@ -63,18 +69,39 @@ export interface RiotContext {
 	presenceTier: number;
 }
 
-const REGION_TO_SHARD: Record<string, string> = {
-	na: "na",
-	latam: "na",
-	br: "na",
-	sa3: "na",
-	eu: "eu",
-	ap: "ap",
-	kr: "kr",
-};
-
 const CLIENT_PLATFORM =
 	"ew0KCSJwbGF0Zm9ybVR5cGUiOiAiUEMiLA0KCSJwbGF0Zm9ybU9TIjogIldpbmRvd3MiLA0KCSJwbGF0Zm9ybU9TVmVyc2lvbiI6ICIxMC4wLjE5MDQxLjEuMjU2LjY0Yml0IiwNCgkicGxhdGZvcm1DaGlwc2V0IjogIlVua25vd24iDQp9";
+
+function readShardFromLog(): string {
+	const localAppData = process.env.LOCALAPPDATA;
+	if (!localAppData) {
+		throw new Error("LOCALAPPDATA environment variable not found.");
+	}
+
+	const logPath = join(
+		localAppData,
+		"VALORANT",
+		"Saved",
+		"Logs",
+		"ShooterGame.log",
+	);
+
+	let content: string;
+	try {
+		content = readFileSync(logPath, "utf-8");
+	} catch {
+		throw new Error(
+			"Could not read ShooterGame.log. Make sure Valorant is running.",
+		);
+	}
+
+	const match = content.match(/https:\/\/glz-(.+?)-1\.(.+?)\.a\.pvp\.net/);
+	if (!match) {
+		throw new Error("Could not determine shard from ShooterGame.log.");
+	}
+
+	return match[2];
+}
 
 function buildLocalAuthHeader(password: string): string {
 	const encoded = Buffer.from(`riot:${password}`).toString("base64");
@@ -93,7 +120,7 @@ async function localGet<T>(
 
 	if (!response.ok) {
 		throw new Error(
-			`Could not connect to Riot Client. Make sure Valorant is open.`,
+			"Could not connect to Riot Client. Make sure Valorant is open.",
 		);
 	}
 
@@ -109,6 +136,8 @@ export async function fetchRiotContext(
 		localGet<EntitlementsResponse>(port, password, "/entitlements/v1/token"),
 		localGet<PresencesResponse>(port, password, "/chat/v4/presences"),
 	]);
+
+	const shard = readShardFromLog();
 
 	let clientVersion = "";
 	let presenceTier = 0;
@@ -129,6 +158,7 @@ export async function fetchRiotContext(
 	return {
 		puuid: session.puuid,
 		region: session.region,
+		shard,
 		gameName: session.game_name,
 		gameTag: session.game_tag,
 		accessToken: entitlements.accessToken,
@@ -138,9 +168,11 @@ export async function fetchRiotContext(
 	};
 }
 
-export async function fetchRankData(ctx: RiotContext): Promise<RankData> {
-	const shard = REGION_TO_SHARD[ctx.region] ?? "na";
-	const url = `https://pd.${shard}.a.pvp.net/mmr/v1/players/${ctx.puuid}`;
+export async function fetchRankData(
+	ctx: RiotContext,
+	currentActId: string,
+): Promise<RankData> {
+	const url = `https://pd.${ctx.shard}.a.pvp.net/mmr/v1/players/${ctx.puuid}`;
 
 	const response = await fetch(url, {
 		headers: {
@@ -152,29 +184,36 @@ export async function fetchRankData(ctx: RiotContext): Promise<RankData> {
 	});
 
 	if (!response.ok) {
-		return { tier: ctx.presenceTier, rr: 0 };
+		return { tier: ctx.presenceTier, rr: 0, peakTier: 0, peakRr: 0 };
 	}
 
 	const mmr = (await response.json()) as MmrResponse;
 	const seasonal = mmr.QueueSkills?.competitive?.SeasonalInfoBySeasonID;
 
 	if (!seasonal) {
-		return { tier: ctx.presenceTier, rr: 0 };
+		return { tier: ctx.presenceTier, rr: 0, peakTier: 0, peakRr: 0 };
 	}
 
-	let bestTier = 0;
-	let bestRr = 0;
-
+	let peakTier = 0;
+	let peakRr = 0;
 	for (const info of Object.values(seasonal)) {
-		if (info.CompetitiveTier > bestTier) {
-			bestTier = info.CompetitiveTier;
-			bestRr = info.RankedRating;
+		const elo = info.Rank * 100 + info.RankedRating;
+		const peakElo = peakTier * 100 + peakRr;
+		if (elo > peakElo) {
+			peakTier = info.Rank;
+			peakRr = info.RankedRating;
 		}
 	}
 
-	if (bestTier > 0) {
-		return { tier: bestTier, rr: bestRr };
+	const currentSeason = seasonal[currentActId];
+	if (currentSeason && currentSeason.Rank > 0) {
+		return {
+			tier: currentSeason.Rank,
+			rr: currentSeason.RankedRating,
+			peakTier,
+			peakRr,
+		};
 	}
 
-	return { tier: ctx.presenceTier, rr: 0 };
+	return { tier: ctx.presenceTier, rr: 0, peakTier, peakRr };
 }

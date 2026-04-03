@@ -5,7 +5,7 @@ process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
 
 import { renderError, renderRankBox } from "./display.js";
 import { readLockfile } from "./lockfile.js";
-import { fetchTierNames, formatRankInfo } from "./rank.js";
+import { fetchGameData, formatRankInfo } from "./rank.js";
 import { fetchRankData, fetchRiotContext } from "./riot-api.js";
 
 function waitForKeypress(): Promise<void> {
@@ -24,15 +24,25 @@ async function main(): Promise<void> {
 	try {
 		const lockfile = readLockfile();
 
-		const [ctx, tierNames] = await Promise.all([
+		const [ctx, gameData] = await Promise.all([
 			fetchRiotContext(lockfile.port, lockfile.password),
-			fetchTierNames(),
+			fetchGameData(),
 		]);
 
-		const { tier, rr } = await fetchRankData(ctx);
+		const { tier, rr, peakTier, peakRr } = await fetchRankData(
+			ctx,
+			gameData.currentActId,
+		);
 
 		const playerName = `${ctx.gameName}#${ctx.gameTag}`;
-		const rankInfo = formatRankInfo(tier, rr, tierNames, playerName);
+		const rankInfo = formatRankInfo(
+			tier,
+			rr,
+			peakTier,
+			peakRr,
+			gameData.tierNames,
+			playerName,
+		);
 		renderRankBox(rankInfo);
 	} catch (error) {
 		renderError(error instanceof Error ? error.message : String(error));

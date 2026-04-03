@@ -14,29 +14,42 @@ function getRankColor(tier: number): (str: string) => string {
 	return chalk.hex("#ffedaa"); // Radiant
 }
 
-function pad(str: string, len: number): string {
+function padRight(str: string, len: number): string {
 	return str + " ".repeat(Math.max(0, len - str.length));
 }
 
+function line(
+	text: string,
+	colorFn: (s: string) => string,
+	innerWidth: number,
+): string {
+	const padded = padRight(text, innerWidth - 3);
+	return `  ${chalk.bold("║")}   ${colorFn(padded)}${chalk.bold("║")}`;
+}
+
 export function renderRankBox(rankInfo: RankInfo): void {
-	const { playerName, rankName, rr, elo, tier } = rankInfo;
+	const {
+		playerName,
+		rankName,
+		rr,
+		elo,
+		tier,
+		peakRankName,
+		peakRr,
+		peakElo,
+		peakTier,
+	} = rankInfo;
+
 	const colorFn = getRankColor(tier);
+	const peakColorFn = getRankColor(peakTier);
 
 	const title = "VALORANT ELO INFO";
-	const nameLine = `Account: ${playerName}`;
-	const rankLine = `Rank:    ${rankName}`;
-	const rrLine = `RR:      ${rr} / 100`;
-	const eloLine = `Elo:     ${elo.toLocaleString()}`;
+	const innerWidth = 30;
 
-	const innerWidth = 28;
 	const top = `  ${chalk.bold(`╔${"═".repeat(innerWidth)}╗`)}`;
-	const titleBar = `  ${chalk.bold("║")}${pad("", Math.floor((innerWidth - title.length) / 2))}${chalk.bold.white(title)}${pad("", Math.ceil((innerWidth - title.length) / 2))}${chalk.bold("║")}`;
+	const titleBar = `  ${chalk.bold("║")}${padRight("", Math.floor((innerWidth - title.length) / 2))}${chalk.bold.white(title)}${padRight("", Math.ceil((innerWidth - title.length) / 2))}${chalk.bold("║")}`;
 	const sep = `  ${chalk.bold(`╠${"═".repeat(innerWidth)}╣`)}`;
 	const empty = `  ${chalk.bold("║")}${" ".repeat(innerWidth)}${chalk.bold("║")}`;
-	const nLine = `  ${chalk.bold("║")}   ${chalk.cyan(pad(nameLine, innerWidth - 3))}${chalk.bold("║")}`;
-	const rLine = `  ${chalk.bold("║")}   ${colorFn(pad(rankLine, innerWidth - 3))}${chalk.bold("║")}`;
-	const rrL = `  ${chalk.bold("║")}   ${chalk.white(pad(rrLine, innerWidth - 3))}${chalk.bold("║")}`;
-	const eloL = `  ${chalk.bold("║")}   ${chalk.white(pad(eloLine, innerWidth - 3))}${chalk.bold("║")}`;
 	const bottom = `  ${chalk.bold(`╚${"═".repeat(innerWidth)}╝`)}`;
 
 	console.log();
@@ -44,10 +57,19 @@ export function renderRankBox(rankInfo: RankInfo): void {
 	console.log(titleBar);
 	console.log(sep);
 	console.log(empty);
-	console.log(nLine);
-	console.log(rLine);
-	console.log(rrL);
-	console.log(eloL);
+	console.log(line(`Player: ${playerName}`, chalk.cyan, innerWidth));
+	console.log(empty);
+	console.log(line("── Current ──", chalk.dim, innerWidth));
+	console.log(line(`Rank:   ${rankName}`, colorFn, innerWidth));
+	console.log(line(`RR:     ${rr} / 100`, chalk.white, innerWidth));
+	console.log(line(`ELO:    ${elo.toLocaleString()}`, chalk.white, innerWidth));
+	console.log(empty);
+	console.log(line("── Peak ──", chalk.dim, innerWidth));
+	console.log(line(`Rank:   ${peakRankName}`, peakColorFn, innerWidth));
+	console.log(line(`RR:     ${peakRr} / 100`, chalk.white, innerWidth));
+	console.log(
+		line(`ELO:    ${peakElo.toLocaleString()}`, chalk.white, innerWidth),
+	);
 	console.log(empty);
 	console.log(bottom);
 	console.log();
