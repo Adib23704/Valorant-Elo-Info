@@ -1,3 +1,5 @@
+// Suppress Node 18 experimental warnings (Fetch API) and TLS warning
+process.removeAllListeners("warning");
 // Bypass TLS verification for Riot's self-signed localhost cert
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = "0";
 
